@@ -114,7 +114,7 @@ acceptance-all:
 
 clean:
 	@echo "> Cleaning workspace..."
-	@$(RMRF) .$/out || (exit 0)
+	@$(RMRF) .$/out benchmarks.test || (exit 0)
 
 verify: verify-format lint
 
@@ -137,9 +137,13 @@ prepare-for-pr: tidy verify test
 	echo "-----------------\n"  &&\
 	exit 0)
 
+benchmark:
+	@echo "> Running Benchmarks"
+	$(GOCMD) test -run=^$  -bench=. -benchtime=1s -benchmem -cpuprofile=bench_cpu.out -tags=benchmarks ./benchmarks/ -v
+
 # NOTE: Windows doesn't support `-p`
 out:
 	@mkdir out
 	mkdir out$/tests
 
-.PHONY: clean build format imports lint test unit acceptance prepare-for-pr verify verify-format
+.PHONY: clean build format imports lint test unit acceptance prepare-for-pr verify verify-format benchmark
